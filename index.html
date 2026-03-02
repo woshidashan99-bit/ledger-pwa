@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>简易记账</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin: 0; background:#0b1220; color:#e5e7eb; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
+    .card { background:#0f172a; border:1px solid #1f2937; border-radius: 14px; padding: 14px; margin: 12px 0; }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    .row { display:flex; gap:10px; flex-wrap: wrap; }
+    label { font-size: 12px; opacity: .85; display:block; margin-bottom: 6px;}
+    input, select, button, textarea {
+      width: 100%; box-sizing: border-box;
+      border-radius: 10px; border:1px solid #334155;
+      padding: 10px; background:#0b1220; color:#e5e7eb;
+      outline: none;
+    }
+    textarea { min-height: 40px; resize: vertical; }
+    .col { flex:1 1 160px; min-width: 160px; }
+    .btn { cursor:pointer; border:0; background:#2563eb; }
+    .btn:active { transform: translateY(1px); }
+    .btn2 { background:#334155; }
+    .danger { background:#dc2626; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid #1f2937; text-align:left; font-size: 14px; }
+    .muted { opacity:.75; font-size: 12px; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #334155; border-radius:999px; font-size:12px; opacity:.9; }
+    .sum { display:flex; gap:10px; flex-wrap: wrap; }
+    .sum .card { flex:1 1 160px; margin:0; }
+    .right { text-align:right; }
+    .pos { color:#34d399; }
+    .neg { color:#f87171; }
+    .top { display:flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>简易记账（离线可用）</h1>
+      <div class="muted" id="hint">数据仅保存在本机</div>
+    </div>
+
+    <div class="sum">
+      <div class="card"><div class="muted">本月收入</div><div id="mIn" style="font-size:22px;">0</div></div>
+      <div class="card"><div class="muted">本月支出</div><div id="mOut" style="font-size:22px;">0</div></div>
+      <div class="card"><div class="muted">本月结余</div><div id="mNet" style="font-size:22px;">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label>类型</label>
+          <select id="type">
+            <option value="out">支出</option>
+            <option value="in">收入</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>金额</label>
+          <input id="amount" type="number" inputmode="decimal" placeholder="例如 25.5" />
+        </div>
+        <div class="col">
+          <label>分类</label>
+          <select id="cat">
+            <option>餐饮</option><option>交通</option><option>购物</option><option>娱乐</option>
+            <option>房租</option><option>水电网</option><option>医疗</option><option>学习</option>
+            <option>工资</option><option>其他</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>日期</label>
+          <input id="date" type="date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col" style="flex:1 1 100%">
+          <label>备注（可选）</label>
+          <textarea id="note" placeholder="例如：午饭"></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col"><button class="btn" id="add">添加记录</button></div>
+        <div class="col"><button class="btn btn2" id="export">导出JSON</button></div>
+        <div class="col"><button class="btn btn2" id="import">导入JSON</button></div>
+        <div class="col"><button class="btn danger" id="wipe">清空全部</button></div>
+      </div>
+      <div class="muted">提示：导出/导入用于备份；换手机时很有用。</div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <label>筛选月份</label>
+          <input id="month" type="month" />
+        </div>
+        <div class="col">
+          <label>关键字（分类/备注）</label>
+          <input id="kw" placeholder="例如 餐饮 / 午饭" />
+        </div>
+        <div class="col">
+          <label>&nbsp;</label>
+          <button class="btn btn2" id="clearFilter">清除筛选</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>日期</th><th>类型</th><th>分类</th><th>备注</th><th class="right">金额</th><th></th></tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+      <div class="muted" id="empty" style="display:none; padding-top:10px;">暂无记录</div>
+    </div>
+  </div>
+
+  <script>
+    const KEY = "pwa_ledger_v1";
+    const $ = (id) => document.getElementById(id);
+
+    function todayISO() {
+      const d = new Date();
+      const off = d.getTimezoneOffset();
+      const local = new Date(d.getTime() - off * 60000);
+      return local.toISOString().slice(0,10);
+    }
+
+    function monthISO(dateStr) { return (dateStr || "").slice(0,7); }
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+      catch { return []; }
+    }
+    function save(items) { localStorage.setItem(KEY, JSON.stringify(items)); }
+
+    function fmt(n) {
+      const x = Number(n || 0);
+      return x.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function recalc(items) {
+      const m = $("month").value || monthISO(todayISO());
+      const monthly = items.filter(it => monthISO(it.date) === m);
+
+      let inc=0, out=0;
+      for (const it of monthly) {
+        const a = Number(it.amount||0);
+        if (it.type === "in") inc += a;
+        else out += a;
+      }
+      $("mIn").textContent = fmt(inc);
+      $("mOut").textContent = fmt(out);
+      const net = inc - out;
+      $("mNet").textContent = fmt(net);
+      $("mNet").className = net >= 0 ? "pos" : "neg";
+    }
+
+    function render() {
+      const items = load().sort((a,b)=> (b.date+a.id).localeCompare(a.date+b.id));
+      const m = $("month").value;
+      const kw = ($("kw").value || "").trim();
+
+      let shown = items;
+      if (m) shown = shown.filter(it => monthISO(it.date) === m);
+      if (kw) {
+        const k = kw.toLowerCase();
+        shown = shown.filter(it =>
+          (it.cat||"").toLowerCase().includes(k) || (it.note||"").toLowerCase().includes(k)
+        );
+      }
+
+      const tb = $("list");
+      tb.innerHTML = "";
+      $("empty").style.display = shown.length ? "none" : "block";
+
+      for (const it of shown) {
+        const tr = document.createElement("tr");
+        const sign = it.type === "in" ? "+" : "-";
+        const cls = it.type === "in" ? "pos" : "neg";
+        tr.innerHTML = `
+          <td>${it.date}</td>
+          <td><span class="pill">${it.type==="in"?"收入":"支出"}</span></td>
+          <td>${it.cat || ""}</td>
+          <td>${it.note || ""}</td>
+          <td class="right ${cls}">${sign}${fmt(it.amount)}</td>
+          <td class="right"><button class="btn danger" data-del="${it.id}">删</button></td>
+        `;
+        tb.appendChild(tr);
+      }
+
+      // delete handler
+      tb.querySelectorAll("button[data-del]").forEach(btn=>{
+        btn.onclick = () => {
+          const id = btn.getAttribute("data-del");
+          const next = load().filter(x => x.id !== id);
+          save(next);
+          render();
+        };
+      });
+
+      recalc(items);
+    }
+
+    function addItem() {
+      const type = $("type").value;
+      const amount = Number($("amount").value);
+      const cat = $("cat").value;
+      const date = $("date").value || todayISO();
+      const note = $("note").value.trim();
+
+      if (!amount || amount <= 0) {
+        alert("金额请输入大于 0 的数字");
+        return;
+      }
+
+      const items = load();
+      items.push({
+        id: (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+        type, amount, cat, date, note
+      });
+      save(items);
+
+      $("amount").value = "";
+      $("note").value = "";
+      render();
+    }
+
+    function downloadText(filename, text) {
+      const blob = new Blob([text], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportJSON() {
+      const items = load();
+      downloadText("ledger-backup.json", JSON.stringify(items, null, 2));
+    }
+
+    function importJSON() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "application/json";
+      input.onchange = async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        const text = await file.text();
+        try {
+          const arr = JSON.parse(text);
+          if (!Array.isArray(arr)) throw new Error("not array");
+          save(arr);
+          render();
+          alert("导入成功");
+        } catch {
+          alert("导入失败：文件格式不对");
+        }
+      };
+      input.click();
+    }
+
+    function wipeAll() {
+      if (!confirm("确定清空全部记录？此操作不可恢复（除非你导出过备份）")) return;
+      save([]);
+      render();
+    }
+
+    // init
+    $("date").value = todayISO();
+    $("month").value = monthISO(todayISO());
+
+    $("add").onclick = addItem;
+    $("export").onclick = exportJSON;
+    $("import").onclick = importJSON;
+    $("wipe").onclick = wipeAll;
+
+    $("month").onchange = render;
+    $("kw").oninput = () => { clearTimeout(window._t); window._t=setTimeout(render,150); };
+    $("clearFilter").onclick = () => { $("kw").value=""; $("month").value = monthISO(todayISO()); render(); };
+
+    // service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(()=>{});
+    }
+
+    render();
+  </script>
+</body>
+</html>
