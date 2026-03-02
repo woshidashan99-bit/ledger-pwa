@@ -1,5 +1,15 @@
-const CACHE = "ledger-pwa-v1";
-const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./sw.js"];
+const CACHE = "ledger-pwa-v2";
+
+// 如果你上传了 bg.jpg / icon-192.png / icon-512.png，建议都写进来
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./sw.js",
+  "./bg.jpg",
+  "./icon-192.png",
+  "./icon-512.png"
+];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));

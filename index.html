@@ -10,19 +10,55 @@
   <title>简易记账</title>
   <style>
     :root { color-scheme: light dark; }
+
+    /* ===== 背景图层（可选） =====
+       1) 把 bg.jpg 放到仓库根目录
+       2) 透明度调 body::after 的 rgba 最后一个数字（0~1）
+    */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background-image:url("./bg.jpg");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      z-index:-2;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      background: rgba(11,18,32,0.78); /* 透明度：0.78 越大越暗，越小越透 */
+      z-index:-1;
+    }
+
     body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial; margin: 0; background:#0b1220; color:#e5e7eb; }
     .wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
     .card { background:#0f172a; border:1px solid #1f2937; border-radius: 14px; padding: 14px; margin: 12px 0; }
     h1 { font-size: 20px; margin: 0 0 8px; }
     .row { display:flex; gap:10px; flex-wrap: wrap; }
     label { font-size: 12px; opacity: .85; display:block; margin-bottom: 6px;}
+
+    /* ===== 统一表单控件高度（解决 iOS month 输入框高度不一致） ===== */
     input, select, button, textarea {
       width: 100%; box-sizing: border-box;
       border-radius: 10px; border:1px solid #334155;
       padding: 10px; background:#0b1220; color:#e5e7eb;
       outline: none;
+
+      height: 44px;
+      line-height: 44px;
     }
-    textarea { min-height: 40px; resize: vertical; }
+    textarea {
+      height: auto;
+      line-height: 1.4;
+      min-height: 44px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      resize: vertical;
+    }
+
     .col { flex:1 1 160px; min-width: 160px; }
     .btn { cursor:pointer; border:0; background:#2563eb; }
     .btn:active { transform: translateY(1px); }
@@ -38,6 +74,12 @@
     .pos { color:#34d399; }
     .neg { color:#f87171; }
     .top { display:flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+    /* ===== 筛选区域两列等宽（关键字/月份框一致） ===== */
+    .filter-row .col {
+      flex: 1 1 0;
+      min-width: 0;
+    }
   </style>
 </head>
 <body>
@@ -53,6 +95,7 @@
       <div class="card"><div class="muted">本月结余</div><div id="mNet" style="font-size:22px;">0</div></div>
     </div>
 
+    <!-- ===== 记账录入 ===== -->
     <div class="card">
       <div class="row">
         <div class="col">
@@ -96,8 +139,50 @@
       <div class="muted">提示：导出/导入用于备份；换手机时很有用。</div>
     </div>
 
+    <!-- ===== 借款/借出模块（新增） ===== -->
     <div class="card">
+      <h1 style="margin:0 0 10px;font-size:18px;">借款/借出记录</h1>
+
       <div class="row">
+        <div class="col">
+          <label>借给谁</label>
+          <input id="loanTo" placeholder="例如：A" />
+        </div>
+        <div class="col">
+          <label>金额</label>
+          <input id="loanAmount" type="number" inputmode="decimal" placeholder="例如 3000" />
+        </div>
+        <div class="col">
+          <label>借出日期</label>
+          <input id="loanDate" type="date" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col" style="flex:1 1 100%">
+          <label>备注（可选）</label>
+          <input id="loanNote" placeholder="例如：3月工资周转" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col"><button class="btn" id="loanAdd">添加借出</button></div>
+      </div>
+
+      <table style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th>借出日期</th><th>对象</th><th>备注</th><th class="right">金额</th><th>状态</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="loanList"></tbody>
+      </table>
+      <div class="muted" id="loanEmpty" style="display:none; padding-top:10px;">暂无借出记录</div>
+    </div>
+
+    <!-- ===== 记账列表与筛选 ===== -->
+    <div class="card">
+      <div class="row filter-row">
         <div class="col">
           <label>筛选月份</label>
           <input id="month" type="month" />
@@ -274,6 +359,101 @@
       render();
     }
 
+    // ===== 借款/借出模块 =====
+    const LOAN_KEY = "pwa_loans_v1";
+
+    function loadLoans(){
+      try { return JSON.parse(localStorage.getItem(LOAN_KEY) || "[]"); }
+      catch { return []; }
+    }
+    function saveLoans(arr){
+      localStorage.setItem(LOAN_KEY, JSON.stringify(arr));
+    }
+
+    function renderLoans(){
+      const loans = loadLoans().sort((a,b)=> (b.date+a.id).localeCompare(a.date+b.id));
+      const tb = $("loanList");
+      tb.innerHTML = "";
+      $("loanEmpty").style.display = loans.length ? "none" : "block";
+
+      for(const it of loans){
+        const status = it.repaid
+          ? `已还 (${it.repaidDate || "-"})`
+          : `未还`;
+        const statusCls = it.repaid ? "pos" : "neg";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${it.date || ""}</td>
+          <td>${it.to || ""}</td>
+          <td>${it.note || ""}</td>
+          <td class="right">${fmt(it.amount)}</td>
+          <td class="${statusCls}">${status}</td>
+          <td class="right">
+            ${it.repaid ? "" : `<button class="btn btn2" data-repay="${it.id}">标记已还</button>`}
+            <button class="btn danger" data-ldel="${it.id}">删</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      }
+
+      tb.querySelectorAll("button[data-repay]").forEach(btn=>{
+        btn.onclick = () => {
+          const id = btn.getAttribute("data-repay");
+          const repaidDate = prompt("输入还款日期（YYYY-MM-DD），留空=今天") || "";
+          const d = repaidDate.trim() || todayISO();
+
+          const arr = loadLoans().map(x=>{
+            if(x.id === id){
+              return { ...x, repaid:true, repaidDate:d };
+            }
+            return x;
+          });
+          saveLoans(arr);
+          renderLoans();
+        };
+      });
+
+      tb.querySelectorAll("button[data-ldel]").forEach(btn=>{
+        btn.onclick = () => {
+          const id = btn.getAttribute("data-ldel");
+          const arr = loadLoans().filter(x=>x.id !== id);
+          saveLoans(arr);
+          renderLoans();
+        };
+      });
+    }
+
+    function addLoan(){
+      const to = $("loanTo").value.trim();
+      const amount = Number($("loanAmount").value);
+      const date = $("loanDate").value || todayISO();
+      const note = $("loanNote").value.trim();
+
+      if(!to){
+        alert("请填写借给谁（例如：A）");
+        return;
+      }
+      if(!amount || amount <= 0){
+        alert("金额请输入大于 0 的数字");
+        return;
+      }
+
+      const arr = loadLoans();
+      arr.push({
+        id: (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)),
+        to, amount, date, note,
+        repaid:false,
+        repaidDate:""
+      });
+      saveLoans(arr);
+
+      $("loanTo").value = "";
+      $("loanAmount").value = "";
+      $("loanNote").value = "";
+      renderLoans();
+    }
+
     // init
     $("date").value = todayISO();
     $("month").value = monthISO(todayISO());
@@ -287,12 +467,17 @@
     $("kw").oninput = () => { clearTimeout(window._t); window._t=setTimeout(render,150); };
     $("clearFilter").onclick = () => { $("kw").value=""; $("month").value = monthISO(todayISO()); render(); };
 
+    // loans init
+    $("loanDate").value = todayISO();
+    $("loanAdd").onclick = addLoan;
+
     // service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js").catch(()=>{});
     }
 
     render();
+    renderLoans();
   </script>
 </body>
 </html>
