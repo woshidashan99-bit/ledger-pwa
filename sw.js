@@ -1,9 +1,10 @@
-const CACHE = "ledger-pwa-v2";
+const CACHE = "ledger-pwa-v3";
 
 // 如果你上传了 bg.jpg / icon-192.png / icon-512.png，建议都写进来
 const ASSETS = [
   "./",
   "./index.html",
+  "./survey.html",
   "./manifest.webmanifest",
   "./sw.js",
   "./bg.jpg",
