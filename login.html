@@ -245,20 +245,136 @@
     .spark.c { right: 18%; bottom: 14%; animation-delay: 1.8s; }
     .spark.d { left: 13%; bottom: 20%; animation-delay: 2.6s; }
 
+    .minion-group {
+      position: absolute;
+      left: 49%;
+      top: 58%;
+      width: min(48vw, 540px);
+      height: 420px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .minion-wrap {
       position: absolute;
-      left: 46%;
-      top: 57%;
       width: 244px;
       height: 344px;
-      transform: translate(-50%, -50%);
-      will-change: transform;
-      animation: hover 3.6s ease-in-out infinite;
       pointer-events: none;
+      transform-origin: center bottom;
+      filter: drop-shadow(0 20px 26px rgba(96, 66, 10, 0.16));
     }
 
     .minion-wrap.laughing {
       animation: laugh-shake 460ms ease-in-out 5;
+    }
+
+    .minion-wrap::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      width: 94px;
+      height: 18px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: rgba(120, 87, 18, 0.14);
+      filter: blur(4px);
+      z-index: -1;
+    }
+
+    .minion-wrap.front-left {
+      left: 40px;
+      bottom: 10px;
+      transform: scale(0.94);
+      z-index: 4;
+    }
+
+    .minion-wrap.back-left {
+      left: -6px;
+      bottom: 84px;
+      transform: scale(0.72);
+      opacity: 0.94;
+      z-index: 1;
+    }
+
+    .minion-wrap.back-right {
+      right: 22px;
+      bottom: 98px;
+      transform: scale(0.78);
+      opacity: 0.96;
+      z-index: 2;
+    }
+
+    .minion-wrap.front-right {
+      right: -4px;
+      bottom: -2px;
+      transform: scale(1.08);
+      z-index: 5;
+    }
+
+    .minion-wrap.tall .body {
+      height: 232px;
+      border-radius: 82px 82px 68px 68px;
+    }
+
+    .minion-wrap.tall .leg {
+      height: 98px;
+    }
+
+    .minion-wrap.short .body {
+      height: 194px;
+      top: 38px;
+      border-radius: 74px 74px 56px 56px;
+    }
+
+    .minion-wrap.short .arm {
+      top: 156px;
+    }
+
+    .minion-wrap.short .leg {
+      bottom: 32px;
+      height: 72px;
+    }
+
+    .minion-wrap.wide .body {
+      left: 32px;
+      width: 180px;
+    }
+
+    .minion-wrap.wide .strap {
+      width: 200px;
+    }
+
+    .minion-wrap.wide .goggles {
+      left: 34px;
+    }
+
+    .minion-wrap.wide .mouth {
+      left: 64px;
+    }
+
+    .minion-wrap.slim .body {
+      left: 52px;
+      width: 144px;
+    }
+
+    .minion-wrap.slim .strap {
+      left: -6px;
+      width: 156px;
+    }
+
+    .minion-wrap.slim .goggles {
+      left: 17px;
+      gap: 6px;
+    }
+
+    .minion-wrap.slim .mouth {
+      left: 47px;
+    }
+
+    .minion-wrap.slim .overalls .bib {
+      left: 40px;
     }
 
     .minion {
@@ -721,18 +837,13 @@
       50% { transform: scale(1.18); opacity: 1; }
     }
 
-    @keyframes hover {
-      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-      50% { transform: translate(-50%, -50%) translateY(-12px); }
-    }
-
     @keyframes laugh-shake {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      20% { transform: translate(calc(-50% - 8px), calc(-50% - 4px)) rotate(-5deg); }
-      40% { transform: translate(calc(-50% + 8px), calc(-50% + 4px)) rotate(5deg); }
-      60% { transform: translate(calc(-50% - 6px), calc(-50% + 2px)) rotate(-4deg); }
-      80% { transform: translate(calc(-50% + 5px), calc(-50% - 3px)) rotate(3deg); }
-      100% { transform: translate(-50%, -50%) rotate(0deg); }
+      0% { margin-left: 0; transform: translateY(0) rotate(0deg); }
+      20% { margin-left: -8px; transform: translateY(-4px) rotate(-5deg); }
+      40% { margin-left: 8px; transform: translateY(4px) rotate(5deg); }
+      60% { margin-left: -6px; transform: translateY(2px) rotate(-4deg); }
+      80% { margin-left: 5px; transform: translateY(-3px) rotate(3deg); }
+      100% { margin-left: 0; transform: translateY(0) rotate(0deg); }
     }
 
     @keyframes card-bump {
@@ -767,9 +878,10 @@
         top: 63%;
       }
 
-      .minion-wrap {
+      .minion-group {
         left: 56%;
-        top: 65%;
+        top: 66%;
+        width: min(82vw, 520px);
       }
     }
 
@@ -812,25 +924,37 @@
         transform: translate(-50%, 0);
       }
 
-      .minion-wrap {
-        left: 58%;
+      .minion-group {
+        left: 53%;
         top: auto;
+        bottom: -12px;
+        width: 360px;
+        height: 356px;
+        transform: translateX(-50%);
+      }
+
+      .minion-wrap.front-left {
+        left: 24px;
+        bottom: 4px;
+        transform: scale(0.72);
+      }
+
+      .minion-wrap.back-left {
+        left: -8px;
+        bottom: 68px;
+        transform: scale(0.56);
+      }
+
+      .minion-wrap.back-right {
+        right: 34px;
+        bottom: 82px;
+        transform: scale(0.62);
+      }
+
+      .minion-wrap.front-right {
+        right: -10px;
         bottom: -8px;
-        transform: translate(-50%, 0);
-      }
-
-      @keyframes hover {
-        0%, 100% { transform: translate(-50%, 0) translateY(0); }
-        50% { transform: translate(-50%, 0) translateY(-10px); }
-      }
-
-      @keyframes laugh-shake {
-        0% { transform: translate(-50%, 0) rotate(0deg); }
-        20% { transform: translate(calc(-50% - 8px), -4px) rotate(-5deg); }
-        40% { transform: translate(calc(-50% + 8px), 4px) rotate(5deg); }
-        60% { transform: translate(calc(-50% - 6px), 2px) rotate(-4deg); }
-        80% { transform: translate(calc(-50% + 5px), -3px) rotate(3deg); }
-        100% { transform: translate(-50%, 0) rotate(0deg); }
+        transform: scale(0.84);
       }
     }
   </style>
@@ -844,12 +968,12 @@
             <div class="eyebrow">BANANA SECURITY MODE</div>
             <h1 class="title">笑着盯你<br />输入密码</h1>
             <p class="desc">
-              左侧的小黄人会在面板里轻轻游走，平时眼睛追着你的鼠标跑。轮到密码框时，它会故意把眼神挪开；要是密码输错，它还会当场开嘲讽。
+              左侧现在是高矮胖瘦四个小黄人站成一组，前后左右带着层次感。平时它们一起盯着你的鼠标跑，轮到密码框时会故意把眼神挪开；要是密码输错，就会集体开嘲讽。
             </p>
             <div class="tip-stack">
-              <div class="tip"><strong>视线联动</strong>平时跟着鼠标走，像真的在盯着你操作。</div>
-              <div class="tip"><strong>隐私小动作</strong>聚焦密码框时，小黄人马上把眼睛看向另一边。</div>
-              <div class="tip"><strong>失败反馈</strong>登录错误会抖肩大笑，还会冒出吐槽气泡。</div>
+              <div class="tip"><strong>四人编队</strong>高矮胖瘦各不相同，还做了前后景深层次。</div>
+              <div class="tip"><strong>视线联动</strong>四双眼睛一起跟着鼠标方向移动。</div>
+              <div class="tip"><strong>失败反馈</strong>登录错误会一起抖肩大笑，还会冒出吐槽气泡。</div>
             </div>
           </div>
 
@@ -863,34 +987,110 @@
             <div class="spark d"></div>
           </div>
 
-          <div class="minion-wrap" id="minionWrap">
-            <div class="minion">
-              <div class="hair">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-              <div class="body">
-                <div class="strap"></div>
-                <div class="goggles">
-                  <div class="eye"><div class="pupil" id="pupilLeft"></div></div>
-                  <div class="eye"><div class="pupil" id="pupilRight"></div></div>
-                </div>
-                <div class="blush left"></div>
-                <div class="blush right"></div>
-                <div class="mouth" id="mouth"></div>
-                <div class="overalls">
-                  <div class="bib">
-                    <div class="strap-left"><div class="button"></div></div>
-                    <div class="strap-right"><div class="button"></div></div>
-                    <div class="pocket"></div>
+          <div class="minion-group" id="minionGroup">
+            <div class="minion-wrap short slim back-left">
+              <div class="minion">
+                <div class="hair"><span></span><span></span><span></span></div>
+                <div class="body">
+                  <div class="strap"></div>
+                  <div class="goggles">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                  </div>
+                  <div class="blush left"></div>
+                  <div class="blush right"></div>
+                  <div class="mouth"></div>
+                  <div class="overalls">
+                    <div class="bib">
+                      <div class="strap-left"><div class="button"></div></div>
+                      <div class="strap-right"><div class="button"></div></div>
+                      <div class="pocket"></div>
+                    </div>
                   </div>
                 </div>
+                <div class="arm left"><div class="hand"></div></div>
+                <div class="arm right"><div class="hand"></div></div>
+                <div class="leg left"><div class="shoe"></div></div>
+                <div class="leg right"><div class="shoe"></div></div>
               </div>
-              <div class="arm left" id="armLeft"><div class="hand"></div></div>
-              <div class="arm right" id="armRight"><div class="hand"></div></div>
-              <div class="leg left"><div class="shoe"></div></div>
-              <div class="leg right"><div class="shoe"></div></div>
+            </div>
+            <div class="minion-wrap tall back-right">
+              <div class="minion">
+                <div class="hair"><span></span><span></span><span></span></div>
+                <div class="body">
+                  <div class="strap"></div>
+                  <div class="goggles">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                  </div>
+                  <div class="blush left"></div>
+                  <div class="blush right"></div>
+                  <div class="mouth"></div>
+                  <div class="overalls">
+                    <div class="bib">
+                      <div class="strap-left"><div class="button"></div></div>
+                      <div class="strap-right"><div class="button"></div></div>
+                      <div class="pocket"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="arm left"><div class="hand"></div></div>
+                <div class="arm right"><div class="hand"></div></div>
+                <div class="leg left"><div class="shoe"></div></div>
+                <div class="leg right"><div class="shoe"></div></div>
+              </div>
+            </div>
+            <div class="minion-wrap wide front-left">
+              <div class="minion">
+                <div class="hair"><span></span><span></span><span></span></div>
+                <div class="body">
+                  <div class="strap"></div>
+                  <div class="goggles">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                  </div>
+                  <div class="blush left"></div>
+                  <div class="blush right"></div>
+                  <div class="mouth"></div>
+                  <div class="overalls">
+                    <div class="bib">
+                      <div class="strap-left"><div class="button"></div></div>
+                      <div class="strap-right"><div class="button"></div></div>
+                      <div class="pocket"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="arm left"><div class="hand"></div></div>
+                <div class="arm right"><div class="hand"></div></div>
+                <div class="leg left"><div class="shoe"></div></div>
+                <div class="leg right"><div class="shoe"></div></div>
+              </div>
+            </div>
+            <div class="minion-wrap tall front-right">
+              <div class="minion">
+                <div class="hair"><span></span><span></span><span></span></div>
+                <div class="body">
+                  <div class="strap"></div>
+                  <div class="goggles">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                  </div>
+                  <div class="blush left"></div>
+                  <div class="blush right"></div>
+                  <div class="mouth"></div>
+                  <div class="overalls">
+                    <div class="bib">
+                      <div class="strap-left"><div class="button"></div></div>
+                      <div class="strap-right"><div class="button"></div></div>
+                      <div class="pocket"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="arm left"><div class="hand"></div></div>
+                <div class="arm right"><div class="hand"></div></div>
+                <div class="leg left"><div class="shoe"></div></div>
+                <div class="leg right"><div class="shoe"></div></div>
+              </div>
             </div>
           </div>
         </section>
@@ -932,12 +1132,13 @@
   </main>
 
   <script>
-    const pupils = [document.getElementById("pupilLeft"), document.getElementById("pupilRight")];
-    const minionWrap = document.getElementById("minionWrap");
+    const minionGroup = document.getElementById("minionGroup");
+    const minionWraps = Array.from(document.querySelectorAll(".minion-wrap"));
+    const pupils = Array.from(document.querySelectorAll(".pupil"));
+    const mouths = Array.from(document.querySelectorAll(".mouth"));
+    const leftArms = Array.from(document.querySelectorAll(".arm.left"));
+    const rightArms = Array.from(document.querySelectorAll(".arm.right"));
     const bubble = document.getElementById("bubble");
-    const mouth = document.getElementById("mouth");
-    const armLeft = document.getElementById("armLeft");
-    const armRight = document.getElementById("armRight");
     const loginCard = document.getElementById("loginCard");
     const status = document.getElementById("status");
     const username = document.getElementById("username");
@@ -950,9 +1151,9 @@
 
     const roastLines = [
       "哈哈，这都能输错，我的护目镜都看乐了。",
-      "再试一次吧，香蕉都记住了你还没记住。",
-      "密码方向不对，我已经笑出双下巴了。",
-      "你输错的速度，比我转眼珠还快。"
+      "再试一次吧，四个小黄人一起记住了你还没记住。",
+      "密码方向不对，我们几个已经笑出声了。",
+      "你输错的速度，比我们转眼珠还快。"
     ];
 
     const state = {
@@ -960,27 +1161,22 @@
       pointerY: window.innerHeight * 0.5,
       passwordMode: false,
       laughTimer: null,
-      bubbleTimer: null,
-      travelAngle: 0,
-      travelTime: 0
+      bubbleTimer: null
     };
 
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    }
-
     function aimEyes() {
-      const eyeOffset = state.passwordMode ? { x: -1, y: -0.15 } : getPointerVector();
-      const max = 8;
       pupils.forEach((pupil) => {
+        const eyeOffset = state.passwordMode ? { x: -1, y: -0.15 } : getPointerVector(pupil);
+        const max = 8;
         pupil.style.transform = "translate(" + (eyeOffset.x * max) + "px, " + (eyeOffset.y * max) + "px)";
       });
     }
 
-    function getPointerVector() {
-      const rect = minionWrap.getBoundingClientRect();
+    function getPointerVector(pupil) {
+      const eye = pupil.parentElement;
+      const rect = eye.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height * 0.25;
+      const cy = rect.top + rect.height / 2;
       const dx = state.pointerX - cx;
       const dy = state.pointerY - cy;
       const len = Math.hypot(dx, dy) || 1;
@@ -991,18 +1187,20 @@
     }
 
     function setExpression(mode) {
-      mouth.className = "mouth";
+      mouths.forEach((mouth) => {
+        mouth.className = "mouth";
+      });
       if (mode === "smirk") {
-        mouth.classList.add("smirk");
-        armLeft.style.transform = "rotate(14deg)";
-        armRight.style.transform = "rotate(-8deg)";
+        mouths.forEach((mouth) => mouth.classList.add("smirk"));
+        leftArms.forEach((arm) => { arm.style.transform = "rotate(14deg)"; });
+        rightArms.forEach((arm) => { arm.style.transform = "rotate(-8deg)"; });
       } else if (mode === "gasp") {
-        mouth.classList.add("gasp");
-        armLeft.style.transform = "rotate(36deg)";
-        armRight.style.transform = "rotate(-32deg)";
+        mouths.forEach((mouth) => mouth.classList.add("gasp"));
+        leftArms.forEach((arm) => { arm.style.transform = "rotate(36deg)"; });
+        rightArms.forEach((arm) => { arm.style.transform = "rotate(-32deg)"; });
       } else {
-        armLeft.style.transform = "rotate(26deg)";
-        armRight.style.transform = "rotate(-18deg)";
+        leftArms.forEach((arm) => { arm.style.transform = "rotate(26deg)"; });
+        rightArms.forEach((arm) => { arm.style.transform = "rotate(-18deg)"; });
       }
     }
 
@@ -1023,12 +1221,12 @@
 
     function triggerLaugh() {
       clearTimeout(state.laughTimer);
-      minionWrap.classList.remove("laughing");
-      void minionWrap.offsetWidth;
-      minionWrap.classList.add("laughing");
+      minionWraps.forEach((wrap) => wrap.classList.remove("laughing"));
+      void minionGroup.offsetWidth;
+      minionWraps.forEach((wrap) => wrap.classList.add("laughing"));
       setExpression("smirk");
       state.laughTimer = setTimeout(() => {
-        minionWrap.classList.remove("laughing");
+        minionWraps.forEach((wrap) => wrap.classList.remove("laughing"));
         if (state.passwordMode) {
           setExpression("gasp");
         } else {
@@ -1041,32 +1239,6 @@
       state.passwordMode = active;
       setExpression(active ? "gasp" : "");
       aimEyes();
-    }
-
-    function animateMinion(time) {
-      state.travelTime = time * 0.001;
-      const radiusX = window.innerWidth < 640 ? 10 : 18;
-      const radiusY = window.innerWidth < 640 ? 8 : 16;
-      const driftX = Math.cos(state.travelTime * 0.8) * radiusX + Math.sin(state.travelTime * 0.34) * 8;
-      const driftY = Math.sin(state.travelTime * 0.95) * radiusY;
-      minionWrap.style.left = "calc(46% + " + driftX + "px)";
-      minionWrap.style.top = "calc(57% + " + driftY + "px)";
-
-      if (window.innerWidth <= 980) {
-        minionWrap.style.left = "calc(56% + " + driftX + "px)";
-        minionWrap.style.top = "calc(65% + " + driftY + "px)";
-      }
-
-      if (window.innerWidth <= 640) {
-        minionWrap.style.left = "calc(58% + " + driftX + "px)";
-        minionWrap.style.top = "";
-        minionWrap.style.bottom = "-8px";
-      } else {
-        minionWrap.style.bottom = "";
-      }
-
-      aimEyes();
-      requestAnimationFrame(animateMinion);
     }
 
     document.addEventListener("mousemove", (event) => {
@@ -1085,7 +1257,7 @@
 
     password.addEventListener("focus", () => {
       updatePasswordMode(true);
-      showBubble("你输密码吧，我先假装看向另一边。");
+      showBubble("你输密码吧，我们先假装看向另一边。");
     });
 
     password.addEventListener("blur", () => {
@@ -1104,8 +1276,8 @@
       const pass = password.value;
 
       if (!user || !pass) {
-        setStatus("账号和密码都要填，小黄人已经开始皱眉了。", "error");
-        showBubble("空着可不行，我都没法笑话你。");
+        setStatus("账号和密码都要填，四个小黄人已经开始皱眉了。", "error");
+        showBubble("空着可不行，我们都没法笑话你。");
         setExpression("gasp");
         return;
       }
@@ -1138,7 +1310,6 @@
 
     setExpression("");
     aimEyes();
-    requestAnimationFrame(animateMinion);
   </script>
 </body>
 </html>
