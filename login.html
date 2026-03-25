@@ -117,67 +117,10 @@
       border-right: 1px solid rgba(157, 112, 24, 0.1);
     }
 
-    .playground-copy {
-      max-width: 360px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(122, 93, 28, 0.12);
-      box-shadow: 0 8px 18px rgba(93, 63, 9, 0.08);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: #765314;
-    }
-
-    .title {
-      margin: 22px 0 12px;
-      font-size: clamp(38px, 6vw, 68px);
-      line-height: 0.96;
-      letter-spacing: -0.05em;
-    }
-
-    .desc {
-      margin: 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.75;
-    }
-
-    .tip-stack {
-      margin-top: 26px;
-      display: grid;
-      gap: 12px;
-      max-width: 290px;
-    }
-
-    .tip {
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.46);
-      border: 1px solid rgba(120, 88, 23, 0.08);
-      box-shadow: var(--card-shadow);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .tip strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
     .bubble {
       position: absolute;
-      left: clamp(22px, 6vw, 74px);
-      top: 290px;
+      left: 28px;
+      top: 36px;
       max-width: 290px;
       padding: 14px 16px;
       border-radius: 22px 22px 22px 8px;
@@ -247,8 +190,8 @@
 
     .minion-group {
       position: absolute;
-      left: 49%;
-      top: 58%;
+      left: 53%;
+      top: 60%;
       width: min(48vw, 540px);
       height: 420px;
       transform: translate(-50%, -50%);
@@ -284,32 +227,32 @@
     }
 
     .minion-wrap.front-left {
-      left: 40px;
-      bottom: 10px;
-      transform: scale(0.94);
+      left: 12px;
+      bottom: 4px;
+      transform: scale(0.88);
       z-index: 4;
     }
 
     .minion-wrap.back-left {
-      left: -6px;
-      bottom: 84px;
-      transform: scale(0.72);
+      left: -34px;
+      bottom: 144px;
+      transform: scale(0.76);
       opacity: 0.94;
-      z-index: 1;
-    }
-
-    .minion-wrap.back-right {
-      right: 22px;
-      bottom: 98px;
-      transform: scale(0.78);
-      opacity: 0.96;
       z-index: 2;
     }
 
+    .minion-wrap.back-right {
+      right: -28px;
+      bottom: 146px;
+      transform: scale(0.8);
+      opacity: 0.96;
+      z-index: 3;
+    }
+
     .minion-wrap.front-right {
-      right: -4px;
+      right: 6px;
       bottom: -2px;
-      transform: scale(1.08);
+      transform: scale(1);
       z-index: 5;
     }
 
@@ -868,10 +811,6 @@
         border-bottom: 1px solid rgba(157, 112, 24, 0.1);
       }
 
-      .bubble {
-        top: 250px;
-      }
-
       .orbit {
         width: min(78vw, 420px);
         left: 56%;
@@ -882,6 +821,10 @@
         left: 56%;
         top: 66%;
         width: min(82vw, 520px);
+      }
+
+      .bubble {
+        top: 28px;
       }
     }
 
@@ -914,6 +857,7 @@
       .bubble {
         left: 18px;
         right: 18px;
+        top: 18px;
         max-width: none;
       }
 
@@ -934,27 +878,27 @@
       }
 
       .minion-wrap.front-left {
-        left: 24px;
-        bottom: 4px;
-        transform: scale(0.72);
+        left: 18px;
+        bottom: 0;
+        transform: scale(0.66);
       }
 
       .minion-wrap.back-left {
-        left: -8px;
-        bottom: 68px;
-        transform: scale(0.56);
+        left: -24px;
+        bottom: 112px;
+        transform: scale(0.58);
       }
 
       .minion-wrap.back-right {
-        right: 34px;
-        bottom: 82px;
+        right: -2px;
+        bottom: 116px;
         transform: scale(0.62);
       }
 
       .minion-wrap.front-right {
-        right: -10px;
+        right: 2px;
         bottom: -8px;
-        transform: scale(0.84);
+        transform: scale(0.76);
       }
     }
   </style>
@@ -964,19 +908,6 @@
     <section class="scene">
       <div class="layout">
         <section class="playground" aria-hidden="true">
-          <div class="playground-copy">
-            <div class="eyebrow">BANANA SECURITY MODE</div>
-            <h1 class="title">笑着盯你<br />输入密码</h1>
-            <p class="desc">
-              左侧现在是高矮胖瘦四个小黄人站成一组，前后左右带着层次感。平时它们一起盯着你的鼠标跑，轮到密码框时会故意把眼神挪开；要是密码输错，就会集体开嘲讽。
-            </p>
-            <div class="tip-stack">
-              <div class="tip"><strong>四人编队</strong>高矮胖瘦各不相同，还做了前后景深层次。</div>
-              <div class="tip"><strong>视线联动</strong>四双眼睛一起跟着鼠标方向移动。</div>
-              <div class="tip"><strong>失败反馈</strong>登录错误会一起抖肩大笑，还会冒出吐槽气泡。</div>
-            </div>
-          </div>
-
           <div class="bubble" id="bubble">哎呀，这密码也太好猜错了吧。</div>
 
           <div class="orbit">
