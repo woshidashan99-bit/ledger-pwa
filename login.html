@@ -119,8 +119,8 @@
 
     .bubble {
       position: absolute;
-      left: 28px;
-      top: 36px;
+      left: 110px;
+      top: 120px;
       max-width: 290px;
       padding: 14px 16px;
       border-radius: 22px 22px 22px 8px;
@@ -824,7 +824,8 @@
       }
 
       .bubble {
-        top: 28px;
+        left: 96px;
+        top: 108px;
       }
     }
 
@@ -855,10 +856,10 @@
       }
 
       .bubble {
-        left: 18px;
-        right: 18px;
-        top: 18px;
-        max-width: none;
+        left: 84px;
+        right: auto;
+        top: 104px;
+        max-width: 220px;
       }
 
       .orbit {
@@ -1188,7 +1189,7 @@
 
     password.addEventListener("focus", () => {
       updatePasswordMode(true);
-      showBubble("你输密码吧，我们先假装看向另一边。");
+      showBubble("你放心输入，我们不看");
     });
 
     password.addEventListener("blur", () => {
